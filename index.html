@@ -13,6 +13,8 @@
 </head>
 <body>
 <div class="bg" aria-hidden="true">
+  <div class="photo-bg"></div>
+  <div class="photo-veil"></div>
   <div class="blob b1"></div>
   <div class="blob b2"></div>
   <div class="blob b3"></div>
@@ -22,45 +24,34 @@
 
 <main class="stack" id="app">
 
-  <!-- ОТКРЫТКА 1 -->
   <section id="screen-1" class="screen active">
     <article class="postcard tilt" data-tilt>
       <header class="pc-head">
-        <div class="pc-to">Диане <span class="pc-dot">·</span> лично в руки</div>
-        <div class="pc-stamp">
-          <div class="stamp-inner">Пятигорск<br><b>2026</b></div>
-        </div>
+        <div class="pc-to">Диана</div>
+        <div class="pc-stamp"><div class="stamp-inner">Пятигорск<br><b>2026</b></div></div>
       </header>
       <div class="pc-body">
         <div class="pc-media reveal d1">
-          <img src="assets/hero.jpg" alt="Машук на закате" />
-          <div class="pc-caption">Машук, закат · Пятигорск</div>
+          <img src="assets/hero.jpg" alt="Машук" />
         </div>
         <div class="pc-text">
-          <p class="eyebrow reveal d2">Здравствуйте, Диана</p>
-          <h1 class="serif reveal d3">Мы ещё не знакомы, но я хотел бы это исправить.</h1>
-          <p class="lead reveal d4">Одно свидание. Без неловкости и обязательств — просто прогулка и разговор. Если не понравится, разойдёмся друзьями.</p>
-          <h2 class="ask reveal d5">Пойдёте со мной на свидание?</h2>
+          <h1 class="serif reveal d3">Пойдём на свидание?</h1>
           <div class="btn-zone reveal d6" id="btnZone">
             <button id="yesBtn" class="btn yes">Да</button>
             <button id="noBtn" class="btn no">Нет</button>
           </div>
-          <p class="hint" id="noHint">Кнопка «Нет» иногда убегает</p>
         </div>
       </div>
-      <footer class="pc-foot"><span>Открытка 01 / 04</span><span class="line"></span><span>Пятигорск</span></footer>
     </article>
   </section>
 
-  <!-- ОТКРЫТКА 2 -->
   <section id="screen-2" class="screen">
     <article class="postcard tilt" data-tilt>
       <header class="pc-head">
-        <div class="pc-to">Куда пойдём</div>
+        <div class="pc-to">Куда?</div>
         <div class="pc-num">02</div>
       </header>
       <div class="pc-media wide reveal d1"><img src="assets/walk.jpg" alt="Парк" /></div>
-      <p class="lead">Выберите один или несколько вариантов. Всё можно обсудить.</p>
       <div class="grid" id="whereGrid">
         <button class="pick" data-value="Кафе">Кафе</button>
         <button class="pick" data-value="Кино">Кино</button>
@@ -78,22 +69,20 @@
     </article>
   </section>
 
-  <!-- ОТКРЫТКА 3 -->
   <section id="screen-3" class="screen">
     <article class="postcard tilt" data-tilt>
       <header class="pc-head">
-        <div class="pc-to">Где гуляем</div>
+        <div class="pc-to">Где?</div>
         <div class="pc-num">03</div>
       </header>
-      <p class="lead">Нажмите на карту — метка придёт мне на почту вместе с ответом.</p>
       <div class="preset-row">
         <button class="mini" data-lat="44.0319" data-lon="43.0818">Цветник</button>
         <button class="mini" data-lat="44.0447" data-lon="43.0880">Канатка</button>
-        <button class="mini" data-lat="44.0415" data-lon="43.0937">Эолова арфа</button>
+        <button class="mini" data-lat="44.0415" data-lon="43.0937">Арфа</button>
         <button class="mini" data-lat="44.0395" data-lon="43.0999">Провал</button>
       </div>
       <div class="map-wrap"><div id="map"></div><div class="map-pulse"></div></div>
-      <div class="map-info" id="mapInfo">Метка: центр Пятигорска. Кликните по карте, чтобы выбрать место.</div>
+      <div class="map-info" id="mapInfo">Ткни в карту.</div>
       <div class="progress"><div class="bar" style="width:66%"></div></div>
       <div class="nav">
         <button class="btn ghost" onclick="goTo(2)">Назад</button>
@@ -102,49 +91,44 @@
     </article>
   </section>
 
-  <!-- ОТКРЫТКА 4 -->
   <section id="screen-4" class="screen">
     <article class="postcard tilt" data-tilt>
       <header class="pc-head">
-        <div class="pc-to">Когда</div>
+        <div class="pc-to">Когда?</div>
         <div class="pc-num">04</div>
       </header>
-      <div class="pc-media wide reveal d1"><img src="assets/evening.jpg" alt="Вечерний город" /></div>
+      <div class="pc-media wide reveal d1"><img src="assets/evening.jpg" alt="Вечер" /></div>
       <label class="lbl">Дата</label>
       <input id="dateInput" type="date" class="input" />
       <label class="lbl">Время</label>
       <div class="time-row">
-        <button class="mini t" data-t="Днём">Днём</button>
-        <button class="mini t" data-t="Вечером">Вечером</button>
+        <button class="mini t" data-t="Днём">День</button>
+        <button class="mini t" data-t="Вечером">Вечер</button>
         <button class="mini t" data-t="На закате">Закат</button>
       </div>
       <input id="timeInput" type="time" class="input" value="18:00" />
-      <label class="lbl">Как к вам обращаться</label>
+      <label class="lbl">Имя</label>
       <input id="nameInput" class="input" value="Диана" placeholder="Имя" />
-      <label class="lbl">Комментарий</label>
-      <textarea id="msgInput" class="input" rows="2" placeholder="Пожелания к встрече…"></textarea>
-      <button id="sendBtn" class="btn yes big" onclick="sendInvite()">Отправить ответ</button>
-      <p class="small">Ответ придёт мне на почту: куда, когда и точка на карте.</p>
+      <label class="lbl">Заметка</label>
+      <textarea id="msgInput" class="input" rows="2" placeholder="Пара слов…"></textarea>
+      <button id="sendBtn" class="btn yes big" onclick="sendInvite()">Отправить</button>
       <div class="progress"><div class="bar" style="width:100%"></div></div>
       <div class="nav"><button class="btn ghost" onclick="goTo(3)">Назад</button></div>
     </article>
   </section>
 
-  <!-- ОТКРЫТКА 5 -->
   <section id="screen-5" class="screen">
     <article class="postcard tilt center" data-tilt>
-      <header class="pc-head"><div class="pc-to">Ответ принят</div><div class="pc-num">05</div></header>
-      <h2 class="serif big">Спасибо, Диана.</h2>
+      <header class="pc-head"><div class="pc-to">Готово</div><div class="pc-num">05</div></header>
+      <h2 class="serif big">Принято.</h2>
       <p id="resultText" class="lead"></p>
-      <a id="mapLink" href="#" target="_blank" class="btn ghost">Открыть метку в Яндекс.Картах</a>
-      <button class="btn yes" onclick="copyResult()">Скопировать ответ</button>
+      <a id="mapLink" href="#" target="_blank" class="btn ghost">Карта</a>
+      <button class="btn yes" onclick="copyResult()">Копия</button>
       <p class="small" id="mailStatus"></p>
     </article>
   </section>
 
 </main>
-
-<div class="foot">Пятигорск · 2026</div>
 
 <script src="script.js"></script>
 </body>

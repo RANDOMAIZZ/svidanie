@@ -25,32 +25,81 @@ function goTo(n) {
   if (n === 3) setTimeout(initMap, 300);
 }
 
-// Убегающая кнопка (десктоп + мобайл)
+// Убегающая кнопка: рандом + плавность (десктоп + мобайл)
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
-const noHint = document.getElementById("noHint");
 let runawayActive = false;
+let lastMove = 0;
 
-function moveNoButton() {
+function clampSpot(x, y, w, h) {
+  const pad = 10;
+  return [
+    Math.min(Math.max(pad, x), Math.max(pad, window.innerWidth - w - pad)),
+    Math.min(Math.max(pad, y), Math.max(pad, window.innerHeight - h - pad))
+  ];
+}
+function moveNoButton(px, py) {
+  const now = performance.now();
+  if (now - lastMove < 120) return; // анти-дребезг
+  lastMove = now;
   state.dodges++;
-  if (!runawayActive) { runawayActive = true; noBtn.classList.add("runaway"); }
-  const pad = 12;
   const r = noBtn.getBoundingClientRect();
-  const maxX = Math.max(pad, window.innerWidth - r.width - pad);
-  const maxY = Math.max(pad, window.innerHeight - r.height - pad);
-  noBtn.style.left = (Math.random() * maxX) + "px";
-  noBtn.style.top = (Math.random() * maxY) + "px";
-  noBtn.textContent = noPhrases[Math.min(state.dodges, noPhrases.length - 1)];
-  const scale = Math.min(1 + state.dodges * 0.1, 1.8);
-  yesBtn.style.transform = `scale(${scale})`;
-  if (noHint) noHint.textContent = ["Кнопка решила прогуляться", "Она быстрая", "Проще нажать «Да»", "Сопротивление бесполезно"][Math.min(state.dodges - 1, 3)];
+  if (!runawayActive) {
+    runawayActive = true;
+    noBtn.classList.add("runaway");
+    noBtn.style.left = r.left + "px";
+    noBtn.style.top = r.top + "px";
+  }
+  const w = r.width, h = r.height;
+  const cx = (px ?? r.left + w / 2), cy = (py ?? r.top + h / 2);
+  const mode = Math.random();
+  let x, y;
+  if (mode < 0.45) {
+    // телепорт подальше от курсора
+    let best = null, bestD = -1;
+    for (let i = 0; i < 12; i++) {
+      const tx = Math.random() * (window.innerWidth - w);
+      const ty = Math.random() * (window.innerHeight - h);
+      const d = Math.hypot(tx + w / 2 - cx, ty + h / 2 - cy);
+      if (d > bestD) { bestD = d; best = [tx, ty]; }
+    }
+    [x, y] = best;
+  } else if (mode < 0.75) {
+    // шаг в сторону
+    const ang = Math.random() * Math.PI * 2;
+    const dist = 140 + Math.random() * 220;
+    x = r.left + Math.cos(ang) * dist;
+    y = r.top + Math.sin(ang) * dist;
+  } else {
+    // к краю
+    const edge = Math.floor(Math.random() * 4);
+    if (edge === 0) { x = 10 + Math.random() * 40; y = Math.random() * (window.innerHeight - h); }
+    else if (edge === 1) { x = window.innerWidth - w - 10 - Math.random() * 40; y = Math.random() * (window.innerHeight - h); }
+    else if (edge === 2) { y = 10 + Math.random() * 40; x = Math.random() * (window.innerWidth - w); }
+    else { y = window.innerHeight - h - 10 - Math.random() * 40; x = Math.random() * (window.innerWidth - w); }
+  }
+  [x, y] = clampSpot(x, y, w, h);
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+  // вариативность: наклон + уменьшение
+  noBtn.style.transform = `rotate(${(Math.random() * 24 - 12).toFixed(0)}deg) scale(${Math.max(0.7, 1 - state.dodges * 0.04).toFixed(2)})`;
+  yesBtn.style.transform = `scale(${Math.min(1 + state.dodges * 0.1, 1.8).toFixed(2)})`;
   spawnDots(4);
 }
-["pointerenter","mouseenter","touchstart","mousedown","focus"].forEach(ev => {
-  noBtn.addEventListener(ev, (e) => { if (e.cancelable && ev === "touchstart") e.preventDefault(); moveNoButton(); }, { passive: false });
+// близость курсора — убегает заранее (только мышь)
+document.addEventListener("pointermove", (e) => {
+  if (e.pointerType !== "mouse" || !runawayActive && state.dodges > 6) return;
+  if (!document.getElementById("screen-1").classList.contains("active")) return;
+  const r = noBtn.getBoundingClientRect();
+  const d = Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY);
+  if (d < 130) moveNoButton(e.clientX, e.clientY);
+}, { passive: true });
+["pointerenter", "mouseenter", "touchstart", "mousedown", "focus"].forEach(ev => {
+  noBtn.addEventListener(ev, (e) => { if (e.cancelable && ev === "touchstart") e.preventDefault(); moveNoButton(e.clientX, e.clientY); }, { passive: false });
 });
-noBtn.addEventListener("click", (e) => { e.preventDefault(); moveNoButton(); });
+noBtn.addEventListener("click", (e) => { e.preventDefault(); moveNoButton(e.clientX, e.clientY); });
 noBtn.addEventListener("touchend", (e) => { e.preventDefault(); }, { passive: false });
+noBtn.addEventListener("touchmove", (e) => { e.preventDefault(); const t = e.touches[0]; if (t) moveNoButton(t.clientX, t.clientY); }, { passive: false });
 yesBtn.addEventListener("click", () => { spawnDots(24); setTimeout(() => goTo(2), 350); });
 
 // Выбор
@@ -99,12 +148,12 @@ function setPlacemark(coords) {
   state.lat = coords[0].toFixed(6); state.lon = coords[1].toFixed(6);
   myPlacemark.geometry.setCoordinates(coords);
   const info = document.getElementById("mapInfo");
-  info.textContent = `Метка: ${state.lat}, ${state.lon}. Определяю адрес…`;
+  info.textContent = `${state.lat}, ${state.lon}…`;
   if (ymaps.geocode) {
     ymaps.geocode(coords).then((res) => {
       const obj = res.geoObjects.get(0);
       state.address = obj ? obj.getAddressLine() : `${state.lat}, ${state.lon}`;
-      info.textContent = `${state.address} (${state.lat}, ${state.lon}). Эта точка придёт мне на почту.`;
+      info.textContent = state.address;
     }).catch(() => { state.address = `${state.lat}, ${state.lon}`; });
   }
 }
@@ -134,7 +183,7 @@ async function sendInvite() {
   btn.textContent = "Отправляю…"; btn.disabled = true;
   const text = `Ответ с сайта-приглашения\nИмя: ${state.name}\nКуда: ${whereList}\nСвой вариант: ${custom || "—"}\nГде: ${state.address}\nКоординаты: ${state.lat}, ${state.lon}\nКарта: ${mapUrl}\nКогда: ${state.date || "—"} в ${state.time} (${state.walkTime || "—"})\nКомментарий: ${state.msg || "—"}`;
   document.getElementById("resultText").innerHTML =
-    `<b>${escapeHtml(state.name)}</b>, спасибо за ответ.<br>Куда: <b>${escapeHtml(whereList)}</b><br>Где: <b>${escapeHtml(state.address)}</b><br>Когда: <b>${escapeHtml(state.date || "договоримся")} в ${escapeHtml(state.time)}</b>`;
+    `${escapeHtml(whereList)} · ${escapeHtml(state.address)} · ${escapeHtml(state.date || "—")} ${escapeHtml(state.time)}`;
   document.getElementById("mapLink").href = mapUrl;
   goTo(5); spawnDots(40);
   try {

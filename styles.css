@@ -16,7 +16,14 @@ body{
 
 /* фон */
 .bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;animation:drift 14s ease-in-out infinite alternate}
+.photo-bg{position:absolute;inset:-4%;
+  background:url('assets/hero.jpg') center/cover no-repeat;
+  animation:kenburns 26s ease-in-out infinite alternate;filter:saturate(1.05)}
+@keyframes kenburns{from{transform:scale(1) translate(0,0)}to{transform:scale(1.12) translate(-1.5%,1%)}}
+.photo-veil{position:absolute;inset:0;
+  background:linear-gradient(160deg,rgba(35,33,30,.55),rgba(35,33,30,.35) 45%,rgba(181,101,74,.35)),
+  radial-gradient(120% 90% at 50% 0%,transparent 40%,rgba(35,33,30,.45));}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;animation:drift 14s ease-in-out infinite alternate}
 .b1{width:420px;height:420px;background:#e8c9a8;left:-120px;top:-100px}
 .b2{width:520px;height:520px;background:#c3d2c3;right:-160px;top:20%;animation-delay:-4s}
 .b3{width:380px;height:380px;background:#d9b8b0;left:30%;bottom:-140px;animation-delay:-8s}
@@ -81,7 +88,7 @@ body{
 .yes:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(35,33,30,.35)}
 .yes:active{transform:scale(.96)}
 .yes.big{width:calc(100% - 44px);margin:14px 22px;font-size:17px}
-.no{background:transparent;color:var(--muted);border-color:var(--line);touch-action:none;user-select:none;-webkit-user-select:none;transition:left .18s,top .18s}
+.no{background:transparent;color:var(--muted);border-color:var(--line);touch-action:none;user-select:none;-webkit-user-select:none;transition:left .38s cubic-bezier(.2,.8,.25,1.15),top .38s cubic-bezier(.2,.8,.25,1.15),transform .3s ease;will-change:left,top}
 .no.runaway{position:fixed;z-index:9999;margin:0;background:var(--paper);box-shadow:0 12px 30px rgba(0,0,0,.25)}
 .ghost{background:transparent;border:1px solid var(--line);color:var(--ink);padding:11px 20px;font-size:14px;text-decoration:none;display:inline-block;margin:6px 4px 0}
 .hint{font-size:12px;color:var(--muted);margin-top:10px;letter-spacing:.04em}
