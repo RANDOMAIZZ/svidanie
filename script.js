@@ -7,12 +7,13 @@ const DEFAULT_CENTER = [44.0486, 43.0594];
 // 2) Отправь себе тестовый ответ, потом «Ответы» → ⋮ → «Получать уведомления по эл. почте»
 // 3) ID формы — из ссылки вида docs.google.com/forms/d/e/ID/viewform
 // 4) entry.XXX — ПКМ по полю вопроса → «Просмотреть код» → name="entry.XXX"
-const GOOGLE_FORM_ID = "ЗАМЕНИ_НА_ID_ФОРМЫ";
+const GOOGLE_FORM_ID = "1FAIpQLSctbdhrE_e78X7iJMKA3lDaCms6VSrGKhWef7G1lkMvjXk6Zw";
 const GF_WHERE = "entry.1111111111";
 const GF_CUSTOM = "entry.2222222222";
 const GF_PLACE = "entry.3333333333";
 const GF_WHEN = "entry.4444444444";
 const GF_MSG = "entry.5555555555";
+function googleFormAction() { return `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`; }
 function googleConfigured() { return GOOGLE_FORM_ID.indexOf("ЗАМЕНИ") === -1; }
 
 const state = {
@@ -212,7 +213,7 @@ async function sendInvite() {
   params[GF_MSG] = state.msg;
   try {
     if (googleConfigured()) {
-      await fetch(`https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`, {
+      await fetch(googleFormAction(), {
         method: "POST", mode: "no-cors",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams(params).toString()
