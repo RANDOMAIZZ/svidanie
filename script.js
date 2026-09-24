@@ -101,6 +101,10 @@ noBtn.addEventListener("click", (e) => { e.preventDefault(); moveNoButton(e.clie
 noBtn.addEventListener("touchend", (e) => { e.preventDefault(); }, { passive: false });
 noBtn.addEventListener("touchmove", (e) => { e.preventDefault(); const t = e.touches[0]; if (t) moveNoButton(t.clientX, t.clientY); }, { passive: false });
 yesBtn.addEventListener("click", () => { spawnDots(24); setTimeout(() => goTo(2), 350); });
+// сама блуждает по всему экрану, даже без курсора
+setInterval(() => {
+  if (document.getElementById("screen-1").classList.contains("active")) moveNoButton();
+}, 1600);
 
 // Выбор
 document.querySelectorAll("#whereGrid .pick").forEach(btn => {
@@ -170,7 +174,7 @@ document.querySelectorAll(".preset-row .mini").forEach(b => {
 function buildMessage() {
   state.date = document.getElementById("dateInput").value;
   state.time = document.getElementById("timeInput").value;
-  state.name = document.getElementById("nameInput").value.trim() || "Диана";
+  state.name = "Диана";
   state.msg = document.getElementById("msgInput").value.trim();
   const custom = document.getElementById("whereCustom").value.trim();
   const whereList = [...state.where].join(", ") || "на ваш вкус";

@@ -17,7 +17,7 @@ body{
 /* фон */
 .bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
 .photo-bg{position:absolute;inset:-4%;
-  background:url('assets/hero.jpg') center/cover no-repeat;
+  background:url('assets/bg-autumn.jpg') center/cover no-repeat;
   animation:kenburns 26s ease-in-out infinite alternate;filter:saturate(1.05)}
 @keyframes kenburns{from{transform:scale(1) translate(0,0)}to{transform:scale(1.12) translate(-1.5%,1%)}}
 .photo-veil{position:absolute;inset:0;
