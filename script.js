@@ -27,7 +27,6 @@ function goTo(n) {
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 let runawayActive = false;
-let wandering = false; // сама бродит только после первого касания
 let lastMove = 0;
 
 function clampSpot(x, y, w, h) {
@@ -41,7 +40,6 @@ function moveNoButton(px, py) {
   const now = performance.now();
   if (now - lastMove < 120) return; // анти-дребезг
   lastMove = now;
-  wandering = true;
   state.dodges++;
   const r = noBtn.getBoundingClientRect();
   if (!runawayActive) {
@@ -92,7 +90,7 @@ document.addEventListener("pointermove", (e) => {
   if (!document.getElementById("screen-1").classList.contains("active")) return;
   const r = noBtn.getBoundingClientRect();
   const d = Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY);
-  if (d < 130) moveNoButton(e.clientX, e.clientY);
+  if (d < 150) moveNoButton(e.clientX, e.clientY);
 }, { passive: true });
 ["pointerenter", "mouseenter", "touchstart", "mousedown", "focus"].forEach(ev => {
   noBtn.addEventListener(ev, (e) => { if (e.cancelable && ev === "touchstart") e.preventDefault(); moveNoButton(e.clientX, e.clientY); }, { passive: false });
@@ -101,10 +99,6 @@ noBtn.addEventListener("click", (e) => { e.preventDefault(); moveNoButton(e.clie
 noBtn.addEventListener("touchend", (e) => { e.preventDefault(); }, { passive: false });
 noBtn.addEventListener("touchmove", (e) => { e.preventDefault(); const t = e.touches[0]; if (t) moveNoButton(t.clientX, t.clientY); }, { passive: false });
 yesBtn.addEventListener("click", () => { spawnDots(24); setTimeout(() => goTo(2), 350); });
-// сама бродит по всему экрану, но только после первого касания
-setInterval(() => {
-  if (wandering && document.getElementById("screen-1").classList.contains("active")) moveNoButton();
-}, 1600);
 
 // Выбор
 document.querySelectorAll("#whereGrid .pick").forEach(btn => {
