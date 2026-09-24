@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 340">
+<defs><linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#2E3A44"/><stop offset=".6" stop-color="#6B7263"/><stop offset="1" stop-color="#D9BFA9"/>
+</linearGradient></defs>
+<rect width="800" height="340" fill="url(#dusk)"/>
+<circle cx="620" cy="90" r="34" fill="#EDE6D8"/>
+<path d="M80 60 L720 60" stroke="#EDE6D8" stroke-width="3" opacity=".7"/>
+<rect x="240" y="60" width="90" height="70" rx="8" fill="none" stroke="#EDE6D8" stroke-width="3"/>
+<rect x="470" y="60" width="90" height="70" rx="8" fill="none" stroke="#EDE6D8" stroke-width="3"/>
+<line x1="285" y1="60" x2="285" y2="20" stroke="#EDE6D8" stroke-width="3"/>
+<line x1="515" y1="60" x2="515" y2="20" stroke="#EDE6D8" stroke-width="3"/>
+<ellipse cx="400" cy="300" rx="420" ry="80" fill="#23211E"/>
+<g fill="#EDE6D8" opacity=".8"><circle cx="150" cy="260" r="4"/><circle cx="300" cy="270" r="4"/><circle cx="500" cy="265" r="4"/><circle cx="650" cy="275" r="4"/></g>
+</svg>

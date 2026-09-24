@@ -3,119 +3,148 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>У меня к тебе один вопрос 💌</title>
-<meta name="description" content="Приглашение на свидание в Пятигорске 💖" />
+<title>Диана — приглашение</title>
+<meta name="description" content="Приглашение на свидание в Пятигорске" />
 <link rel="stylesheet" href="styles.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<!-- Яндекс.Карты -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
 </head>
 <body>
-<div class="hearts-bg" id="heartsBg"></div>
+<div class="bg" aria-hidden="true">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="grain"></div>
+  <div class="dots" id="dotsBg"></div>
+</div>
 
-<main class="card" id="app">
+<main class="stack" id="app">
 
-  <!-- ЭКРАН 1 -->
+  <!-- ОТКРЫТКА 1 -->
   <section id="screen-1" class="screen active">
-    <div class="sticker">💌 Пятигорск</div>
-    <h1 class="script">Привет, красавица!</h1>
-    <p class="subtitle">У меня к тебе очень важный<br>вопрос...</p>
-    <div class="big-emoji">🐻❤️🐰</div>
-    <h2 class="question">Пойдёшь со мной<br>на свидание?</h2>
-
-    <div class="btn-zone" id="btnZone">
-      <button id="yesBtn" class="btn btn-yes">Да! 💖</button>
-      <button id="noBtn" class="btn btn-no">Нет</button>
-    </div>
-    <p class="hint" id="noHint">Попробуй нажать «Нет» 😏</p>
+    <article class="postcard tilt" data-tilt>
+      <header class="pc-head">
+        <div class="pc-to">Диане <span class="pc-dot">·</span> лично в руки</div>
+        <div class="pc-stamp">
+          <div class="stamp-inner">Пятигорск<br><b>2026</b></div>
+        </div>
+      </header>
+      <div class="pc-body">
+        <div class="pc-media reveal d1">
+          <img src="assets/hero.svg" alt="Машук на закате" />
+          <div class="pc-caption">Машук, закат · Пятигорск</div>
+        </div>
+        <div class="pc-text">
+          <p class="eyebrow reveal d2">Здравствуйте, Диана</p>
+          <h1 class="serif reveal d3">Мы ещё не знакомы, но я хотел бы это исправить.</h1>
+          <p class="lead reveal d4">Одно свидание. Без неловкости и обязательств — просто прогулка и разговор. Если не понравится, разойдёмся друзьями.</p>
+          <h2 class="ask reveal d5">Пойдёте со мной на свидание?</h2>
+          <div class="btn-zone reveal d6" id="btnZone">
+            <button id="yesBtn" class="btn yes">Да</button>
+            <button id="noBtn" class="btn no">Нет</button>
+          </div>
+          <p class="hint" id="noHint">Кнопка «Нет» иногда убегает</p>
+        </div>
+      </div>
+      <footer class="pc-foot"><span>Открытка 01 / 04</span><span class="line"></span><span>Пятигорск</span></footer>
+    </article>
   </section>
 
-  <!-- ЭКРАН 2: КУДА ПОЙДЁМ -->
+  <!-- ОТКРЫТКА 2 -->
   <section id="screen-2" class="screen">
-    <div class="progress"><div class="bar" style="width:33%"></div></div>
-    <h2>Ура!! 🥰<br><span class="script">Куда пойдём?</span></h2>
-    <p class="subtitle">Выбери один или несколько вариантов</p>
-    <div class="grid" id="whereGrid">
-      <button class="chip-card" data-value="Кафе ☕">☕<span>Кафе</span></button>
-      <button class="chip-card" data-value="Кино 🎬">🎬<span>Кино</span></button>
-      <button class="chip-card" data-value="Парк Цветник 🌳">🌳<span>Цветник</span></button>
-      <button class="chip-card" data-value="Канатка на Машук 🚡">🚡<span>Машук</span></button>
-      <button class="chip-card" data-value="Ресторан 🍷">🍷<span>Ресторан</span></button>
-      <button class="chip-card" data-value="Прогулка к Провалу 💧">💧<span>Провал</span></button>
-    </div>
-    <input id="whereCustom" class="input" placeholder="Свой вариант... (например: пикник)" />
-    <div class="nav">
-      <button class="btn btn-ghost" onclick="goTo(1)">← Назад</button>
-      <button class="btn btn-yes" onclick="goTo(3)">Дальше →</button>
-    </div>
+    <article class="postcard tilt" data-tilt>
+      <header class="pc-head">
+        <div class="pc-to">Куда пойдём</div>
+        <div class="pc-num">02</div>
+      </header>
+      <div class="pc-media wide reveal d1"><img src="assets/walk.svg" alt="Парк" /></div>
+      <p class="lead">Выберите один или несколько вариантов. Всё можно обсудить.</p>
+      <div class="grid" id="whereGrid">
+        <button class="pick" data-value="Кафе">Кафе</button>
+        <button class="pick" data-value="Кино">Кино</button>
+        <button class="pick" data-value="Парк Цветник">Цветник</button>
+        <button class="pick" data-value="Канатка на Машук">Машук</button>
+        <button class="pick" data-value="Ресторан">Ресторан</button>
+        <button class="pick" data-value="Прогулка к Провалу">Провал</button>
+      </div>
+      <input id="whereCustom" class="input" placeholder="Свой вариант…" />
+      <div class="progress"><div class="bar" style="width:33%"></div></div>
+      <div class="nav">
+        <button class="btn ghost" onclick="goTo(1)">Назад</button>
+        <button class="btn yes" onclick="goTo(3)">Дальше</button>
+      </div>
+    </article>
   </section>
 
-  <!-- ЭКРАН 3: ГДЕ ГУЛЯТЬ + КАРТА -->
+  <!-- ОТКРЫТКА 3 -->
   <section id="screen-3" class="screen">
-    <div class="progress"><div class="bar" style="width:66%"></div></div>
-    <h2>Где будем<br><span class="script">гулять?</span></h2>
-    <p class="subtitle">Выбери место или <b>ткни в карту</b> — метка придёт мне на почту 📍</p>
-
-    <div class="preset-row">
-      <button class="mini" data-lat="44.0319" data-lon="43.0818">🌸 Цветник</button>
-      <button class="mini" data-lat="44.0447" data-lon="43.0880">🚡 Канатка</button>
-      <button class="mini" data-lat="44.0415" data-lon="43.0937">🎶 Эолова арфа</button>
-      <button class="mini" data-lat="44.0395" data-lon="43.0999">💧 Провал</button>
-    </div>
-
-    <div id="map"></div>
-    <div class="map-info" id="mapInfo">📍 Метка: центр Пятигорска<br><small>Кликни по карте, чтобы поставить наше место</small></div>
-
-    <div class="nav">
-      <button class="btn btn-ghost" onclick="goTo(2)">← Назад</button>
-      <button class="btn btn-yes" onclick="goTo(4)">Дальше →</button>
-    </div>
+    <article class="postcard tilt" data-tilt>
+      <header class="pc-head">
+        <div class="pc-to">Где гуляем</div>
+        <div class="pc-num">03</div>
+      </header>
+      <p class="lead">Нажмите на карту — метка придёт мне на почту вместе с ответом.</p>
+      <div class="preset-row">
+        <button class="mini" data-lat="44.0319" data-lon="43.0818">Цветник</button>
+        <button class="mini" data-lat="44.0447" data-lon="43.0880">Канатка</button>
+        <button class="mini" data-lat="44.0415" data-lon="43.0937">Эолова арфа</button>
+        <button class="mini" data-lat="44.0395" data-lon="43.0999">Провал</button>
+      </div>
+      <div class="map-wrap"><div id="map"></div><div class="map-pulse"></div></div>
+      <div class="map-info" id="mapInfo">Метка: центр Пятигорска. Кликните по карте, чтобы выбрать место.</div>
+      <div class="progress"><div class="bar" style="width:66%"></div></div>
+      <div class="nav">
+        <button class="btn ghost" onclick="goTo(2)">Назад</button>
+        <button class="btn yes" onclick="goTo(4)">Дальше</button>
+      </div>
+    </article>
   </section>
 
-  <!-- ЭКРАН 4: КОГДА + ОТПРАВКА -->
+  <!-- ОТКРЫТКА 4 -->
   <section id="screen-4" class="screen">
-    <div class="progress"><div class="bar" style="width:100%"></div></div>
-    <h2>Когда<br><span class="script">и как связаться?</span></h2>
-
-    <label class="lbl">Дата</label>
-    <input id="dateInput" type="date" class="input" />
-
-    <label class="lbl">Время</label>
-    <div class="time-row">
-      <button class="mini t" data-t="Днём ☀️">Днём</button>
-      <button class="mini t" data-t="Вечером 🌆">Вечером</button>
-      <button class="mini t" data-t="На закате 🌅">Закат</button>
-    </div>
-    <input id="timeInput" type="time" class="input" value="18:00" />
-
-    <label class="lbl">Твоё имя 💕</label>
-    <input id="nameInput" class="input" placeholder="Как к тебе обращаться?" />
-
-    <label class="lbl">Пожелание / комментарий</label>
-    <textarea id="msgInput" class="input" rows="2" placeholder="Например: хочу мороженое и обнимашки 🍦"></textarea>
-
-    <button id="sendBtn" class="btn btn-yes big" onclick="sendInvite()">Отправить 💌</button>
-    <p class="small">Нажмёшь — мне на почту придёт письмо: куда, когда и метка с карты 🗺️</p>
-
-    <div class="nav">
-      <button class="btn btn-ghost" onclick="goTo(3)">← Назад</button>
-    </div>
+    <article class="postcard tilt" data-tilt>
+      <header class="pc-head">
+        <div class="pc-to">Когда</div>
+        <div class="pc-num">04</div>
+      </header>
+      <div class="pc-media wide reveal d1"><img src="assets/evening.svg" alt="Вечерний город" /></div>
+      <label class="lbl">Дата</label>
+      <input id="dateInput" type="date" class="input" />
+      <label class="lbl">Время</label>
+      <div class="time-row">
+        <button class="mini t" data-t="Днём">Днём</button>
+        <button class="mini t" data-t="Вечером">Вечером</button>
+        <button class="mini t" data-t="На закате">Закат</button>
+      </div>
+      <input id="timeInput" type="time" class="input" value="18:00" />
+      <label class="lbl">Как к вам обращаться</label>
+      <input id="nameInput" class="input" value="Диана" placeholder="Имя" />
+      <label class="lbl">Комментарий</label>
+      <textarea id="msgInput" class="input" rows="2" placeholder="Пожелания к встрече…"></textarea>
+      <button id="sendBtn" class="btn yes big" onclick="sendInvite()">Отправить ответ</button>
+      <p class="small">Ответ придёт мне на почту: куда, когда и точка на карте.</p>
+      <div class="progress"><div class="bar" style="width:100%"></div></div>
+      <div class="nav"><button class="btn ghost" onclick="goTo(3)">Назад</button></div>
+    </article>
   </section>
 
-  <!-- ЭКРАН 5: УСПЕХ -->
-  <section id="screen-5" class="screen center">
-    <div class="big-emoji">💖🥹💖</div>
-    <h2 class="script big">Это свидание!</h2>
-    <p id="resultText" class="subtitle"></p>
-    <a id="mapLink" href="#" target="_blank" class="btn btn-ghost">Открыть нашу метку в Яндекс.Картах 🗺️</a>
-    <button class="btn btn-yes" onclick="copyResult()">Скопировать ответ 📋</button>
-    <p class="small" id="mailStatus"></p>
+  <!-- ОТКРЫТКА 5 -->
+  <section id="screen-5" class="screen">
+    <article class="postcard tilt center" data-tilt>
+      <header class="pc-head"><div class="pc-to">Ответ принят</div><div class="pc-num">05</div></header>
+      <h2 class="serif big">Спасибо, Диана.</h2>
+      <p id="resultText" class="lead"></p>
+      <a id="mapLink" href="#" target="_blank" class="btn ghost">Открыть метку в Яндекс.Картах</a>
+      <button class="btn yes" onclick="copyResult()">Скопировать ответ</button>
+      <p class="small" id="mailStatus"></p>
+    </article>
   </section>
 
 </main>
 
-<footer>сделано с 💖 в Пятигорске</footer>
+<div class="foot">Пятигорск · 2026</div>
 
 <script src="script.js"></script>
 </body>
