@@ -1,6 +1,19 @@
-// Настройки
+// Настройки почты
 const MY_EMAIL = "bogdanrandomaizzer@gmail.com";
 const DEFAULT_CENTER = [44.0486, 43.0594];
+
+// Google-форма (вставь свои значения — инструкция в README):
+// 1) Создай форму с вопросами: Куда / Свой вариант / Где / Когда / Комментарий
+// 2) Отправь себе тестовый ответ, потом «Ответы» → ⋮ → «Получать уведомления по эл. почте»
+// 3) ID формы — из ссылки вида docs.google.com/forms/d/e/ID/viewform
+// 4) entry.XXX — ПКМ по полю вопроса → «Просмотреть код» → name="entry.XXX"
+const GOOGLE_FORM_ID = "ЗАМЕНИ_НА_ID_ФОРМЫ";
+const GF_WHERE = "entry.1111111111";
+const GF_CUSTOM = "entry.2222222222";
+const GF_PLACE = "entry.3333333333";
+const GF_WHEN = "entry.4444444444";
+const GF_MSG = "entry.5555555555";
+function googleConfigured() { return GOOGLE_FORM_ID.indexOf("ЗАМЕНИ") === -1; }
 
 const state = {
   where: new Set(),
@@ -28,6 +41,7 @@ const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 let runawayActive = false;
 let lastMove = 0;
+let quietUntil = 0; // пауза после прыжка — кнопка не должна цепляться сама за себя
 
 function clampSpot(x, y, w, h) {
   const pad = 10;
@@ -36,10 +50,12 @@ function clampSpot(x, y, w, h) {
     Math.min(Math.max(pad, y), Math.max(pad, window.innerHeight - h - pad))
   ];
 }
-function moveNoButton(px, py) {
+function moveNoButton(px, py, fromEnter) {
   const now = performance.now();
-  if (now - lastMove < 120) return; // анти-дребезг
+  if (now - lastMove < 150) return; // анти-дребезг
+  if (fromEnter && now < quietUntil) return; // не реагировать на собственное движение под курсором
   lastMove = now;
+  quietUntil = now + 650;
   state.dodges++;
   const r = noBtn.getBoundingClientRect();
   if (!runawayActive) {
@@ -92,10 +108,13 @@ document.addEventListener("pointermove", (e) => {
   const d = Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY);
   if (d < 150) moveNoButton(e.clientX, e.clientY);
 }, { passive: true });
-["pointerenter", "mouseenter", "touchstart", "mousedown", "focus"].forEach(ev => {
-  noBtn.addEventListener(ev, (e) => { if (e.cancelable && ev === "touchstart") e.preventDefault(); moveNoButton(e.clientX, e.clientY); }, { passive: false });
+["pointerenter", "mouseenter"].forEach(ev => {
+  noBtn.addEventListener(ev, (e) => { moveNoButton(e.clientX, e.clientY, true); }, { passive: true });
 });
-noBtn.addEventListener("click", (e) => { e.preventDefault(); moveNoButton(e.clientX, e.clientY); });
+["touchstart", "mousedown", "focus"].forEach(ev => {
+  noBtn.addEventListener(ev, (e) => { if (e.cancelable && ev === "touchstart") e.preventDefault(); moveNoButton(e.clientX, e.clientY, false); }, { passive: false });
+});
+noBtn.addEventListener("click", (e) => { e.preventDefault(); moveNoButton(e.clientX, e.clientY, false); });
 noBtn.addEventListener("touchend", (e) => { e.preventDefault(); }, { passive: false });
 noBtn.addEventListener("touchmove", (e) => { e.preventDefault(); const t = e.touches[0]; if (t) moveNoButton(t.clientX, t.clientY); }, { passive: false });
 yesBtn.addEventListener("click", () => { spawnDots(24); setTimeout(() => goTo(2), 350); });
@@ -185,23 +204,38 @@ async function sendInvite() {
   document.getElementById("mailtoBtn").href = `mailto:${MY_EMAIL}?subject=${encodeURIComponent("Ответ с сайта: " + whereList)}&body=${encodeURIComponent(text)}`;
   goTo(5); spawnDots(40);
   const status = document.getElementById("mailStatus");
+  const params = {};
+  params[GF_WHERE] = whereList;
+  params[GF_CUSTOM] = custom;
+  params[GF_PLACE] = `${state.address} (${state.lat}, ${state.lon}) ${mapUrl}`;
+  params[GF_WHEN] = `${state.date || "—"} ${state.time} (${state.walkTime || "—"})`;
+  params[GF_MSG] = state.msg;
   try {
-    const res = await fetch(`https://formsubmit.co/ajax/${MY_EMAIL}`, {
-      method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({
-        _subject: `Ответ с сайта: ${whereList}`,
-        _template: "table", _captcha: "false",
-        "Куда": whereList, "Свой вариант": custom,
-        "Адрес": state.address, "Координаты": `${state.lat}, ${state.lon}`,
-        "Карта": mapUrl, "Дата": state.date, "Время": `${state.time} (${state.walkTime})`,
-        "Комментарий": state.msg, "Сообщение": text
-      })
-    });
-    status.textContent = res.ok
-      ? "Отправлено. Если письма нет — проверь спам и активацию FormSubmit, либо жми «Дубль письмом»."
-      : "Не отправилось само — жми «Дубль письмом» или «Копия».";
+    if (googleConfigured()) {
+      await fetch(`https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`, {
+        method: "POST", mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(params).toString()
+      });
+      status.textContent = "Отправлено. Ответ уже в Google-форме.";
+    } else {
+      const res = await fetch(`https://formsubmit.co/ajax/${MY_EMAIL}`, {
+        method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          _subject: `Ответ с сайта: ${whereList}`,
+          _template: "table", _captcha: "false",
+          "Куда": whereList, "Свой вариант": custom,
+          "Адрес": state.address, "Координаты": `${state.lat}, ${state.lon}`,
+          "Карта": mapUrl, "Дата": state.date, "Время": `${state.time} (${state.walkTime})`,
+          "Комментарий": state.msg, "Сообщение": text
+        })
+      });
+      status.textContent = res.ok
+        ? "Отправлено. Если письма нет — проверь спам и активацию FormSubmit, либо жми «Дубль письмом»."
+        : "Не отправилось само — жми «Дубль письмом» или «Копия».";
+    }
   } catch (e) {
-    status.textContent = "Нет связи с почтовым сервисом — жми «Дубль письмом» или «Копия».";
+    status.textContent = "Нет связи с сервисом — жми «Дубль письмом» или «Копия».";
   }
   btn.textContent = "Отправить"; btn.disabled = false;
   localStorage.setItem("dateInvite", text);
