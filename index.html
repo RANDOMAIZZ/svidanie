@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>У меня к тебе один вопрос 💌</title>
+<meta name="description" content="Приглашение на свидание в Пятигорске 💖" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- Яндекс.Карты -->
+<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+</head>
+<body>
+<div class="hearts-bg" id="heartsBg"></div>
+
+<main class="card" id="app">
+
+  <!-- ЭКРАН 1 -->
+  <section id="screen-1" class="screen active">
+    <div class="sticker">💌 Пятигорск</div>
+    <h1 class="script">Привет, красавица!</h1>
+    <p class="subtitle">У меня к тебе очень важный<br>вопрос...</p>
+    <div class="big-emoji">🐻❤️🐰</div>
+    <h2 class="question">Пойдёшь со мной<br>на свидание?</h2>
+
+    <div class="btn-zone" id="btnZone">
+      <button id="yesBtn" class="btn btn-yes">Да! 💖</button>
+      <button id="noBtn" class="btn btn-no">Нет</button>
+    </div>
+    <p class="hint" id="noHint">Попробуй нажать «Нет» 😏</p>
+  </section>
+
+  <!-- ЭКРАН 2: КУДА ПОЙДЁМ -->
+  <section id="screen-2" class="screen">
+    <div class="progress"><div class="bar" style="width:33%"></div></div>
+    <h2>Ура!! 🥰<br><span class="script">Куда пойдём?</span></h2>
+    <p class="subtitle">Выбери один или несколько вариантов</p>
+    <div class="grid" id="whereGrid">
+      <button class="chip-card" data-value="Кафе ☕">☕<span>Кафе</span></button>
+      <button class="chip-card" data-value="Кино 🎬">🎬<span>Кино</span></button>
+      <button class="chip-card" data-value="Парк Цветник 🌳">🌳<span>Цветник</span></button>
+      <button class="chip-card" data-value="Канатка на Машук 🚡">🚡<span>Машук</span></button>
+      <button class="chip-card" data-value="Ресторан 🍷">🍷<span>Ресторан</span></button>
+      <button class="chip-card" data-value="Прогулка к Провалу 💧">💧<span>Провал</span></button>
+    </div>
+    <input id="whereCustom" class="input" placeholder="Свой вариант... (например: пикник)" />
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="goTo(1)">← Назад</button>
+      <button class="btn btn-yes" onclick="goTo(3)">Дальше →</button>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 3: ГДЕ ГУЛЯТЬ + КАРТА -->
+  <section id="screen-3" class="screen">
+    <div class="progress"><div class="bar" style="width:66%"></div></div>
+    <h2>Где будем<br><span class="script">гулять?</span></h2>
+    <p class="subtitle">Выбери место или <b>ткни в карту</b> — метка придёт мне на почту 📍</p>
+
+    <div class="preset-row">
+      <button class="mini" data-lat="44.0319" data-lon="43.0818">🌸 Цветник</button>
+      <button class="mini" data-lat="44.0447" data-lon="43.0880">🚡 Канатка</button>
+      <button class="mini" data-lat="44.0415" data-lon="43.0937">🎶 Эолова арфа</button>
+      <button class="mini" data-lat="44.0395" data-lon="43.0999">💧 Провал</button>
+    </div>
+
+    <div id="map"></div>
+    <div class="map-info" id="mapInfo">📍 Метка: центр Пятигорска<br><small>Кликни по карте, чтобы поставить наше место</small></div>
+
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="goTo(2)">← Назад</button>
+      <button class="btn btn-yes" onclick="goTo(4)">Дальше →</button>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 4: КОГДА + ОТПРАВКА -->
+  <section id="screen-4" class="screen">
+    <div class="progress"><div class="bar" style="width:100%"></div></div>
+    <h2>Когда<br><span class="script">и как связаться?</span></h2>
+
+    <label class="lbl">Дата</label>
+    <input id="dateInput" type="date" class="input" />
+
+    <label class="lbl">Время</label>
+    <div class="time-row">
+      <button class="mini t" data-t="Днём ☀️">Днём</button>
+      <button class="mini t" data-t="Вечером 🌆">Вечером</button>
+      <button class="mini t" data-t="На закате 🌅">Закат</button>
+    </div>
+    <input id="timeInput" type="time" class="input" value="18:00" />
+
+    <label class="lbl">Твоё имя 💕</label>
+    <input id="nameInput" class="input" placeholder="Как к тебе обращаться?" />
+
+    <label class="lbl">Пожелание / комментарий</label>
+    <textarea id="msgInput" class="input" rows="2" placeholder="Например: хочу мороженое и обнимашки 🍦"></textarea>
+
+    <button id="sendBtn" class="btn btn-yes big" onclick="sendInvite()">Отправить 💌</button>
+    <p class="small">Нажмёшь — мне на почту придёт письмо: куда, когда и метка с карты 🗺️</p>
+
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="goTo(3)">← Назад</button>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 5: УСПЕХ -->
+  <section id="screen-5" class="screen center">
+    <div class="big-emoji">💖🥹💖</div>
+    <h2 class="script big">Это свидание!</h2>
+    <p id="resultText" class="subtitle"></p>
+    <a id="mapLink" href="#" target="_blank" class="btn btn-ghost">Открыть нашу метку в Яндекс.Картах 🗺️</a>
+    <button class="btn btn-yes" onclick="copyResult()">Скопировать ответ 📋</button>
+    <p class="small" id="mailStatus"></p>
+  </section>
+
+</main>
+
+<footer>сделано с 💖 в Пятигорске</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
