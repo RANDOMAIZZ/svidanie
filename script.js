@@ -6,13 +6,11 @@ const state = {
   where: new Set(),
   walkTime: "",
   date: "", time: "18:00",
-  name: "Диана", msg: "",
+  msg: "",
   lat: DEFAULT_CENTER[0], lon: DEFAULT_CENTER[1],
   address: "центр Пятигорска",
   dodges: 0,
 };
-
-const noPhrases = ["Нет", "Точно нет?", "Может, да?", "Не поймать", "Попробуйте ещё", "Кнопка сдаётся"];
 
 // Экраны
 function goTo(n) {
@@ -29,6 +27,7 @@ function goTo(n) {
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 let runawayActive = false;
+let wandering = false; // сама бродит только после первого касания
 let lastMove = 0;
 
 function clampSpot(x, y, w, h) {
@@ -42,6 +41,7 @@ function moveNoButton(px, py) {
   const now = performance.now();
   if (now - lastMove < 120) return; // анти-дребезг
   lastMove = now;
+  wandering = true;
   state.dodges++;
   const r = noBtn.getBoundingClientRect();
   if (!runawayActive) {
@@ -101,9 +101,9 @@ noBtn.addEventListener("click", (e) => { e.preventDefault(); moveNoButton(e.clie
 noBtn.addEventListener("touchend", (e) => { e.preventDefault(); }, { passive: false });
 noBtn.addEventListener("touchmove", (e) => { e.preventDefault(); const t = e.touches[0]; if (t) moveNoButton(t.clientX, t.clientY); }, { passive: false });
 yesBtn.addEventListener("click", () => { spawnDots(24); setTimeout(() => goTo(2), 350); });
-// сама блуждает по всему экрану, даже без курсора
+// сама бродит по всему экрану, но только после первого касания
 setInterval(() => {
-  if (document.getElementById("screen-1").classList.contains("active")) moveNoButton();
+  if (wandering && document.getElementById("screen-1").classList.contains("active")) moveNoButton();
 }, 1600);
 
 // Выбор
@@ -174,7 +174,6 @@ document.querySelectorAll(".preset-row .mini").forEach(b => {
 function buildMessage() {
   state.date = document.getElementById("dateInput").value;
   state.time = document.getElementById("timeInput").value;
-  state.name = "Диана";
   state.msg = document.getElementById("msgInput").value.trim();
   const custom = document.getElementById("whereCustom").value.trim();
   const whereList = [...state.where].join(", ") || "на ваш вкус";
@@ -185,31 +184,32 @@ async function sendInvite() {
   const { whereList, custom, mapUrl } = buildMessage();
   const btn = document.getElementById("sendBtn");
   btn.textContent = "Отправляю…"; btn.disabled = true;
-  const text = `Ответ с сайта-приглашения\nИмя: ${state.name}\nКуда: ${whereList}\nСвой вариант: ${custom || "—"}\nГде: ${state.address}\nКоординаты: ${state.lat}, ${state.lon}\nКарта: ${mapUrl}\nКогда: ${state.date || "—"} в ${state.time} (${state.walkTime || "—"})\nКомментарий: ${state.msg || "—"}`;
+  const text = `Ответ с сайта-приглашения\nКуда: ${whereList}\nСвой вариант: ${custom || "—"}\nГде: ${state.address}\nКоординаты: ${state.lat}, ${state.lon}\nКарта: ${mapUrl}\nКогда: ${state.date || "—"} в ${state.time} (${state.walkTime || "—"})\nКомментарий: ${state.msg || "—"}`;
   document.getElementById("resultText").innerHTML =
     `${escapeHtml(whereList)} · ${escapeHtml(state.address)} · ${escapeHtml(state.date || "—")} ${escapeHtml(state.time)}`;
   document.getElementById("mapLink").href = mapUrl;
+  document.getElementById("mailtoBtn").href = `mailto:${MY_EMAIL}?subject=${encodeURIComponent("Ответ с сайта: " + whereList)}&body=${encodeURIComponent(text)}`;
   goTo(5); spawnDots(40);
+  const status = document.getElementById("mailStatus");
   try {
     const res = await fetch(`https://formsubmit.co/ajax/${MY_EMAIL}`, {
       method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
-        _subject: `Приглашение: ${state.name} — ${whereList}`,
+        _subject: `Ответ с сайта: ${whereList}`,
         _template: "table", _captcha: "false",
-        "Имя": state.name, "Куда": whereList, "Свой вариант": custom,
+        "Куда": whereList, "Свой вариант": custom,
         "Адрес": state.address, "Координаты": `${state.lat}, ${state.lon}`,
         "Карта": mapUrl, "Дата": state.date, "Время": `${state.time} (${state.walkTime})`,
         "Комментарий": state.msg, "Сообщение": text
       })
     });
-    document.getElementById("mailStatus").textContent = res.ok
-      ? "Ответ отправлен мне на почту."
-      : "Не удалось отправить автоматически, воспользуйтесь копированием.";
+    status.textContent = res.ok
+      ? "Отправлено. Если письма нет — проверь спам и активацию FormSubmit, либо жми «Дубль письмом»."
+      : "Не отправилось само — жми «Дубль письмом» или «Копия».";
   } catch (e) {
-    document.getElementById("mailStatus").innerHTML =
-      `Автопересылка недоступна. <a href="mailto:${MY_EMAIL}?subject=${encodeURIComponent("Ответ: " + state.name)}&body=${encodeURIComponent(text)}">Открыть письмо вручную</a>`;
+    status.textContent = "Нет связи с почтовым сервисом — жми «Дубль письмом» или «Копия».";
   }
-  btn.textContent = "Отправить ответ"; btn.disabled = false;
+  btn.textContent = "Отправить"; btn.disabled = false;
   localStorage.setItem("dateInvite", text);
 }
 function copyResult() {
